@@ -1,0 +1,45 @@
+/* @import url(http://fonts.googleapis.com/css?family=Libre+Baskerville|Racing+Sans+One|Satisfy); */
+body {
+    font-size: 200%;
+    font-family: Libre Baskerville;
+}
+
+/* custom styles can go here */
+
+/* general changes */
+.reveal section img {
+  margin: 0px 0px;
+  background: rgba(255, 255, 255, 0);
+  border: 0;
+  box-shadow: 0 0 0px rgba(0, 0, 0, 0); }
+
+.reveal .slide-number {
+  color: #88c540; }
+
+
+/* slide specific changes */
+.aboutme img {
+  border: 0;
+  float:left;
+  margin: 0px 15px 15px 0px;
+  width: 389;
+  height: 568;
+  border-radius: 0px; }
+
+html.img-right div.slide-background.present {
+    background-position: right;
+}
+
+.reveal .slides {
+  height: 100%;
+  top: 0;
+  margin-top: 0;
+}
+
+.reveal .slides>section {
+  min-height: 90%;
+}
+
+.reveal .slides>section>section {
+  min-height: 100%;
+}
