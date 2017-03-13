@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>PyConUA 2017</title>
+
+		<meta name="description" content="Asyncio">
+		<meta name="author" content="Nikolay Novik">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+		<link rel="stylesheet" href="css/my.css">
+
+		<!-- Code syntax highlighting -->
+        <link class="codestyle" rel="stylesheet" href="css/tomorrow.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+<!-- ####################################################################  -->
+               <section id="intro" class="aboutme">
+                    <img src='images/ava5.png' style="background:none; border:none; box-shadow:none;">
+                    <h1></h1>
+                    <h1></h1>
+
+					<h3>Scaling Stateful Servces</h3>
+					<p> Nikolay Novik</p>
+                    <p><a href="http://github.com/jettify">https://github.com/jettify</a></p>
+					<p>PyConUA 2017</p>
+			   </section>
+<!-- ####################################################################  -->
+				<section id="aobut_me">
+                    <h3>I am ...</h3>
+                    <ul>
+                        <li><b>Software Engineer</b>: at DataRobot Ukraine</li>
+                        <li><b>Github</b>: <a href="http://github.com/jettify">https://github.com/jettify</a></li>
+                        <li><b>Twitter</b>: <a href="https://twitter.com/isinf">https://twitter.com/isinf</a></li>
+                        <li><b>aio-libs</b>: <a href="https://github.com/aio-libs">https://github.com/aio-libs</a></li>
+                        <li><b>My Projects</b>:
+                            <ul>
+                                <!-- TODO: add link to each project -->
+                                <li><i>database clients</i>: <code>aiomysql, aioobc, aiogibson</code></li>
+                                <li><i>web and etc</i>: <code>aiomonitor, aiohttp_debugtoolbar, aiobotocore,
+                                    aiohttp_mako, aiohttp_admin, aiorwlock</code></li>
+                            </ul>
+                        </li>
+                    </ul>
+				</section>
+<!-- ####################################################################  -->
+				<section id="poll"> <h5> Poll: Have you ever read dynamo paper?</h5>
+                    <img src="images/dynamo_paper.png" height="400px">
+                    <ol>
+                        <li>I read this papers.</li>
+                        <li>I heard about this paper and know key ideas.</li>
+                        <li>I think distributed systems is kinda cool.</li>
+                    </ol>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Agenda</h6>
+                    TODO: add links for papers?  <ol>
+                        <font size="6">
+                            <li>Motivation, why and when we might want to user stateful services.</li>
+                            <li>Industry examples: Uber, Halo 4, DragonAge, HPC</li>
+                            <li>AP vs CP systems, why AP</li>
+                            <li>Existing frameworks</li>
+                            <li>Problem statement, required components: job routing, membership protocols, failure detection.</li>
+                            <li>Job routing with consistent hashing (akamai paper)</li>
+                            <li>Membership Protocols: gossip vs spanning tree</li>
+                            <li>Failure detector protocol</li>
+                            <li>SWIM protocol description (swim paper)</li>
+                            <li>Possible improvements</li>
+                        </font>
+                    </ol>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+                    <h6>Use Stateless<del> (Duck tape)</del>  When you can!</h6>
+                    <img src="images/wd40.jpeg" height="400px">
+                    <p> Stateless protocol is proven technique, use it when
+                    your problem could be reduced to it! Stateless protocols
+                    is new duck tape.</p>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Issues with Stateless services</h6>
+                    <ul>
+                        <li>Not all problems could be solved with stateless
+                            approach, for example soft real time ones</li>
+                        <li>Hard to be stateless, when state is huge and
+                            pulling it form DB or serialization is very
+                            expensive</li>
+                        <li>We have all sorts of nasty problems when our
+                            database should be sharded and database specifics
+                            leaks into application</li>
+                        <li>It’s wasteful to repeatedly pull resources into
+                            load balanced services</li>
+                    </ul>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Stateless Service Example</h6>
+                    <img src="images/stateless.svg" height="500px">
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Benefits of Stateful Services</h6>
+                    <ul>
+                        <li>Data locality, logic executed where data is stored
+                            with fast access</li>
+                        <li>"Stronger" consistency with sticky connections</li>
+                        <li>Hight performance, no need to fetch state to the
+                            load balanced node, data already is there</li>
+                    </ul>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Stateful Service Example</h6>
+                    <img src="images/statefull.svg" height="500px">
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Industry example: UBER</h6>
+                    <img src='images/San_Diego_Supercomputer_Center_East1.jpeg' height="450px">
+                    <p>Microsoft developed own distributed systems framework Orleas</p>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Industry example: Halo 4</h6>
+                    <img src='images/San_Diego_Supercomputer_Center_East1.jpeg' height="450px">
+                    <p>Microsoft developed own distributed systems framework Orleas</p>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Industry example: HPC</h6>
+                    <img src='images/San_Diego_Supercomputer_Center_East1.jpeg' height="450px">
+                    <p>San Diego Supercomputer Center uses Serf to coordinate
+                    compute resource in multiple locations, cluster size is about 2k nodes</p>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Overview of frameworks for application clustering</h6>
+                    <small>
+                        <table>
+                            <tr>
+                                <th>Name</th>
+                                <th>Language</th>
+                                <th>Developer</th>
+                            </tr>
+                            <tr>
+                                <td><a href="https://github.com/uber/ringpop-node">RingPop</a></td>
+                                <td>node.js</td>
+                                <td>Uber, used as services for matching user and driver</td>
+                            </tr>
+                            <tr>
+                                <td><a href="https://github.com/hashicorp/serf">Serf</a></td>
+                                <td>golang</td>
+                                <td>Hashicorp, used in number applications for instance HPC</td>
+                            </tr>
+                            <tr>
+                                <td><a href="https://github.com/dotnet/orleans">Orleans</a></td>
+                                <td>.NET</td>
+                                <td>Microsoft, used in Halo 4 online game</td>
+                            </tr>
+                            <tr>
+                                <td><a href="https://github.com/orbit/orbit">Orbit/jGroups </a></td>
+                                <td>Java</td>
+                                <td>EA Games, used in DragonAge game</td>
+                            </tr>
+                            <tr>
+                                <td><a href="https://github.com/basho/riak_core">riak_core</a></td>
+                                <td>Erlang</td>
+                                <td>Basho, building block for Riak database</td>
+                            </tr>
+                            <tr>
+                                <td><a href="https://github.com/akka/akka">Akka</a></td>
+                                <td>Scala</td>
+                                <td>Lightblend, general purpose distribute systems framework</td>
+                            </tr>
+                            <tr>
+                                <td>???</td>
+                                <td>Python</td>
+                                <td>???</td>
+                            </tr>
+                        </table>
+                        </small>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Why not just use Zookeeper/Consul/Ectd (or in other words ZAB, Paxos, Raft)?</h6>
+                    <ul>
+                        <li>CP systems emphasize consistency and same view on
+                            data for each node. What is available to one can
+                            be unavailable to other</li>
+                        <li>Nodes availability decision best when it is local</li>
+                        <li>Due to coordination overhead, approach is less
+                            scalable, typically 10s of servers</li>
+                        <li>Separate subsystem to support</li>
+                    </ul>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Typical system with coordination</h6>
+                    <img src='images/zookeeper.png' height="450px">
+                    <ul>
+                        <li>Zookeeper forces own view of state of the system</li>
+                        <li>Num number of possible commnunication links: $ \displaystyle edges = \frac{n (n -1) }{2} $ but for FD we use only $ n $ </li>
+                    </ul>
+<!--
+                        <div style="width: 100%;overflow:auto;">
+                            <div style="float:left; width: 50%">
+                                <p><img src='images/zookeeper.png' height="500px"/></p>
+                            </div>
+                            <div style="float:right;width: 50%">
+                                <font size="6">
+                                <ul>
+                                    <li>CP systems emphasize consistency and same view on
+                                        data for each node. What is available to one can
+                                        be unavailable to other</li>
+                                    <li>Nodes availability decision best when it is local</li>
+                                    <li>Due to coordination overhead, approach is less
+                                        scalable, typically 10s of servers</li>
+                                </ul>
+                                </font>
+                            </div>
+                        </div>
+-->
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Real world problem for data scientists: Prediction service</h6>
+                    <ul>
+                        <p><i>We need scalable service, where user can upload models, and use them
+                    in their APIs. For instance consider payment service, which
+                    has models to detect fraud transaction or models that detects
+                    strange user behaviour etc. User should only care about: </i></p>
+                        <li>Deploy models to prediction servers</li>
+                        <li>Hit models with API calls</li>
+                    </ul>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Problem definition</h6>
+                        <div style="width: 100%;overflow:auto;">
+                            <div style="float:left; width: 70%">
+                    <img src='images/problem_definition.svg' height="400px">
+                            </div>
+                            <div style="float:right;width: 30%">
+                                <font size="5">
+                                    Requirements:
+                                <ul>
+                                    <li><b>Dynamic scaling</b>: servers could be added and removed on demand</li>
+                                    <li><b>Fault tolerance</b>: cluster should be partially alive in case of network issues</li>
+                                    <li><b>Exploit data locality</b>: model size is large, we need to avoid model reloading</li>
+                                    <li><b>Flexible API</b>: user can connect to any node</li>
+                                </ul>
+                                </font>
+                            </div>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Required components</h6>
+                    <ol>
+                        <li><i>Work distribution and routing</i></li>
+                        <li><i>Cluster membership update</i> </li>
+                        <li><i>Failure detector</i> - SWIM protocol</li>
+                    </ol>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Naive solution. Hard coded cluster nodes</h6>
+                    <ul>
+                        <li>Very easy to implement, viable solution when dynamic resizing is not required</li>
+                        <li>Does not support dynamic scaling in or scaling out</li>
+                        <li>Requires cluster restart for changing nodes configuration</li>
+                    </ul>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Consistent Hashing Solution</h6>
+                    <img src="images/consitent_hashing.png" height="400px">
+                    <p>Technique invented at MIT, grant supported by DARPA and US Army</p>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Consistent Hashing. Basic Idea</h6>
+                    <img src="images/consistent-hashing_5.png" height="400px">
+                    <small><a href="http://blog.carlosgaldino.com/consistent-hashing.html">http://blog.carlosgaldino.com/consistent-hashing.html</a></small>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Consistent Hashing. Adding node</h6>
+                    <img src="images/consistent-hashing_9.png" height="400px">
+                    <p>Only part of keys moved to new addres, other partitions not changed</p>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Consistent Hashing. Removing node</h6>
+                    <img src="images/consistent-hashing_10.png" height="400px">
+                    <p>In case of node failure next address will handle all requests</p>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Consistent Hashing. Virtual nodes</h6>
+                    <img src="images/consistent-hashing_14.png" height="400px">
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Cluster Membership Problem</h6>
+                    <img src="images/problem_1.svg" height="500px">
+                    <p>
+                    We have routing and job distribution, lets figure out how
+                    to add and remove nodes.</p>
+				</section>
+<!-- ####################################################################  -->
+
+				<section>
+					<h6>Cluster Membership Problem. Naive solution</h6>
+                    <p> Each node should be able to broadcast states updates, and each
+                    not faulty node should be able to receive this message.
+                        </p>
+                    <ul>
+                        <li>Use network level technology to broadcast messages,
+                            usually disabled on clouds</li>
+                        <li>Send message one by one to each peer. Not efficient
+                            and has reliability problems</li>
+                    </ul>
+				</section>
+<!-- ####################################################################  -->
+
+				<section>
+					<h6>Gossip Overview</h6>
+                    <p>
+                    <img src="images/gossip2.svg" height="500px">
+                    </p>
+                    Basic gossip protocol: send message to k random peers,
+                    peers retransmit message to next k random peers, in log(n)
+                    steps, information will be disseminated.
+				</section>
+<!-- ####################################################################  -->
+
+				<section>
+					<h6>Gossip Dissemination Properties</h6>
+                        <div style="width: 100%;overflow:auto;">
+                            <div style="float:left; width: 70%">
+                                \[ \frac{\text{d}x}{\text{d}t}=-\beta x y \]
+                                with solution:
+                                \[ y \approx (n + 1) - \frac{1}{n^{cb-2}} \]
+                            </div>
+                            <div style="float:right;width: 30%">
+                                <font size="5">
+                                    <ul>
+                                        <li>$t = c\log(n)$</li>
+                                        <li>$ \beta= \frac{b}{n}$</li>
+                                        <li>$y$ number of infected node</li>
+                                        <li>$n$ number of nodes</li>
+                                        <li>$t$ time, $b$ number infected nodes per round</li>
+                                    </ul>
+                                </font>
+                            </div>
+                    <p>
+                    <ul>
+                        <li><i>Low latency</i> - data disseminated withing $c\log(n)$ rounds</li>
+                        <li><i>Reliability/Fault tolerance</i> - after few rounds it is very hard to kill information spread</li>
+                        <li><i>Lightweight</i> - only handful number of messages are transmitted $ cb\log(n)$</li>
+                    </ul>
+                    </p>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>SWIM failure detector</h6>
+                    <img src="images/dynamo_paper.png" height="400px">
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Improvement: network coordinates</h6>
+                    <img src="images/dynamo_paper.png" height="400px">
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Improvement: partial view for huge clusters</h6>
+                    <img src="images/dynamo_paper.png" height="400px">
+				</section>
+
+<!-- ####################################################################  -->
+				<section>
+					<h6>Improvement: DHT for more balancing</h6>
+                    <img src="images/dynamo_paper.png" height="400px">
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Stateful Services Challenges</h6>
+                    <ul>
+                        <li>Work distribution - could be addressed by consistent hashing and DHT combination</li>
+                        <li>Code deployment - huge state is takes time to persist on disk and restore data, see how FB fixed this</li>
+                        <li>Unbounded data structures - back pressure should be implemented on day one</li>
+                        <li>Memory management - GC pauses may influence FD</li>
+                        <li>Persistent strategies - where and how persist state, DB, append log etc</li>
+                    </ul>
+				</section>
+<!-- ####################################################################  -->
+<!-- 
+				<section>
+					<h6>Sync does not scale (TM)</h6>
+                    <pre><code class="hljs python" data-trim>
+from django.http import HttpResponse
+def my_view(request):
+    # blocks thread
+    r = requests.get('https://s3-us-west-2.amazonaws.com/dataintake/{uid}')
+    data = r.json()
+    # ...
+    return HttpResponse(status=200)
+                    </code></pre>
+				</section> 
+-->
+<!-- ####################################################################  -->
+				<section>
+					<h3>References</h3>
+                    <ol>
+                        <li>Swim: Scalable weakly-consistent infection-style process group
+                            membership protocol - A Das, I Gupta, A Motivala</li>
+                        <li></li>
+                        <li></li>
+                    </ol>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h2>Thank you!</h2>
+                       and check out aio-libs!
+					<p><a href="https://github.com/aio-libs">https://github.com/aio-libs</a></p>
+                    <hr>
+					<p>slides <a href="https://jettify.github.io/pycon/">https://jettify.github.io/minskpy</a></p>
+				</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+                math: {
+                        mathjax: 'https://cdn.mathjax.org/mathjax/latest/MathJax.js',
+                        config: 'TeX-AMS_HTML-full'  // See http://docs.mathjax.org/en/latest/config-files.html
+                    },
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+                    { src: 'plugin/math/math.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
