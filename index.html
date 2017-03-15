@@ -394,17 +394,50 @@
 				<section>
 					<h6>Gossip Protocol and Packet loss</h6>
                     <img src="images/packet_loss.svg" height="500px">
-                    <p>
-                    Heavy packet loss does not stop dissemination, it simply
-                    will take a bit longer, 2 times for 50% loss.
-                    </p>
+                    <p>Heavy packet loss does not stop dissemination, it simply
+                    will take a bit longer, 2 times for 50% loss.</p>
 
+				</section>
+
+<!-- ####################################################################  -->
+				<section>
+					<h6>Failure detection protocol</h6>
+                    <img src="images/problem_2.svg" height="500px">
+                    <p>We can route jobs and communicate cluster update,
+                    last component is failure detector.</p>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Failure detectors for asynchronous systems</h6>
+                    <img src="images/fd.svg" height="350px">
+                    <font size="6">
+                    <p>In asynchronous distributed systems, the detection of
+                    <b>crash failures</b> is imperfect. There will be <i>false positives</i>
+                    and <i>false negatives</i>. Two properties are relevant:
+                    </p>
+                    <ul>
+                        <li><b>Completeness.</b> Every crashed process is eventually suspected.</li>
+                        <li><b>Accuracy.</b> No correct process is ever suspected</li>
+                    </ul>
+                    </font>
 				</section>
 <!-- ####################################################################  -->
 
 				<section>
 					<h6>SWIM failure detector</h6>
                     <img src="images/dynamo_paper.png" height="400px">
+                    <p>SWIM: <b>S</b>calable <b>W</b>eakly-consistent <b>I</b>nfection-style
+                    <b>P</b>rocess Group Membership. Protocol</p>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>SWIM FD</h6>
+                    <img src="images/swim_fd1.svg" height="400px">
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>SWIM FD, indirect ping</h6>
+                    <img src="images/swim_fd2.svg" height="400px">
 				</section>
 <!-- ####################################################################  -->
 				<section>
