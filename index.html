@@ -46,7 +46,7 @@
                     <h1></h1>
                     <h1></h1>
 
-					<h3>Scaling Stateful Servces</h3>
+					<h3>Key Concepts For Scalable Stateful Services</h3>
 					<p> Nikolay Novik</p>
                     <p><a href="http://github.com/jettify">https://github.com/jettify</a></p>
 					<p>PyConUA 2017</p>
@@ -81,16 +81,11 @@
 <!-- ####################################################################  -->
 				<section>
 					<h6>Agenda</h6>
-                    TODO: add links for papers?  <ol>
+                    <ol>
                         <font size="6">
                             <li>Motivation, why and when we might want to user stateful services.</li>
                             <li>Industry examples: Uber, Halo 4, DragonAge, HPC</li>
-                            <li>AP vs CP systems, why AP</li>
-                            <li>Existing frameworks</li>
-                            <li>Problem statement, required components: job routing, membership protocols, failure detection.</li>
-                            <li>Job routing with consistent hashing (akamai paper)</li>
-                            <li>Membership Protocols: gossip vs spanning tree</li>
-                            <li>Failure detector protocol</li>
+                            <li>Problem statement, required components</li>
                             <li>SWIM protocol description (swim paper)</li>
                             <li>Possible improvements</li>
                         </font>
@@ -124,6 +119,8 @@
 				<section>
 					<h6>Stateless Service Example</h6>
                     <img src="images/stateless.svg" height="500px">
+                    <p>Notice that user data fetched several times and cached
+                    on multiple servers.</p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
@@ -140,25 +137,9 @@
 				<section>
 					<h6>Stateful Service Example</h6>
                     <img src="images/statefull.svg" height="500px">
-				</section>
-<!-- ####################################################################  -->
-				<section>
-					<h6>Industry example: UBER</h6>
-                    <img src='images/uber.png' height="450px">
-                    <p>Microsoft developed own distributed systems framework Orleas</p>
-				</section>
-<!-- ####################################################################  -->
-				<section>
-					<h6>Industry example: Halo 4</h6>
-                    <img src='images/halo.png' height="550px">
-                    <p>Microsoft developed own distributed systems framework Orleas</p>
-				</section>
-<!-- ####################################################################  -->
-				<section>
-					<h6>Industry example: HPC</h6>
-                    <img src='images/San_Diego_Supercomputer_Center_East1.jpeg' height="450px">
-                    <p>San Diego Supercomputer Center uses Serf to coordinate
-                    compute resource in multiple locations, cluster size is about 2k nodes</p>
+                    <p>Avoided are extra trips to the database which reduces
+                    latency. Even if the database is down the request can be
+                    handled.</p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
@@ -169,40 +150,48 @@
                                 <th>Name</th>
                                 <th>Language</th>
                                 <th>Developer</th>
+                                <th>Description</th>
                             </tr>
                             <tr>
                                 <td><a href="https://github.com/uber/ringpop-node">RingPop</a></td>
                                 <td>node.js</td>
-                                <td>Uber, used as services for matching user and driver</td>
+                                <td>Uber</td>
+                                <td>Used as services for matching user and driver with follow up location update</td>
                             </tr>
                             <tr>
                                 <td><a href="https://github.com/hashicorp/serf">Serf</a></td>
                                 <td>golang</td>
-                                <td>Hashicorp, used in number applications for instance HPC</td>
+                                <td>Hashicorp</td>
+                                <td>Used in number applications for instance in HPC to manage computing resources</td>
                             </tr>
                             <tr>
                                 <td><a href="https://github.com/dotnet/orleans">Orleans</a></td>
                                 <td>.NET</td>
-                                <td>Microsoft, used in Halo 4 online game</td>
+                                <td>Microsoft</td>
+                                <td>General purpose framework, used in Halo online game</td>
                             </tr>
                             <tr>
                                 <td><a href="https://github.com/orbit/orbit">Orbit/jGroups </a></td>
                                 <td>Java</td>
-                                <td>EA Games, used in DragonAge game</td>
+                                <td>EA Games</td>
+                                <td>Used in Bioware games, such as DragonAge game, not sure where thou. Inspired by Oreleans</td>
                             </tr>
                             <tr>
                                 <td><a href="https://github.com/basho/riak_core">riak_core</a></td>
                                 <td>Erlang</td>
-                                <td>Basho, building block for Riak database</td>
+                                <td>Basho</td>
+                                <td>Building block for Riak database and erlang distributed systems</td>
                             </tr>
                             <tr>
                                 <td><a href="https://github.com/akka/akka">Akka</a></td>
                                 <td>Scala</td>
-                                <td>Lightblend, general purpose distribute systems framework</td>
+                                <td>Lightblend</td>
+                                <td>General purpose distribute systems framework, often used as microservies platform</td>
                             </tr>
                             <tr>
                                 <td>???</td>
                                 <td>Python</td>
+                                <td>???</td>
                                 <td>???</td>
                             </tr>
                         </table>
@@ -210,44 +199,24 @@
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Why not just use Zookeeper/Consul/Ectd (or in other words ZAB, Paxos, Raft)?</h6>
-                    <ul>
-                        <li>CP systems emphasize consistency and same view on
-                            data for each node. What is available to one can
-                            be unavailable to other</li>
-                        <li>Nodes availability decision best when it is local</li>
-                        <li>Due to coordination overhead, approach is less
-                            scalable, typically 10s of servers</li>
-                        <li>Separate subsystem to support</li>
-                    </ul>
+					<h6>Industry example: UBER</h6>
+                    <img src='images/uber.png' height="450px">
+                    <p>Driver sends volatile location information to dedicated server, updates replicated to neigbour
+                    nodes. User with close location will be routed to same node as driver.</p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Typical system with coordination</h6>
-                    <img src='images/zookeeper.png' height="450px">
-                    <ul>
-                        <li>Zookeeper forces own view of state of the system</li>
-                        <li>Num number of possible commnunication links: $ \displaystyle edges = \frac{n (n -1) }{2} $ but for FD we use only $ n $ </li>
-                    </ul>
-<!--
-                        <div style="width: 100%;overflow:auto;">
-                            <div style="float:left; width: 50%">
-                                <p><img src='images/zookeeper.png' height="500px"/></p>
-                            </div>
-                            <div style="float:right;width: 50%">
-                                <font size="6">
-                                <ul>
-                                    <li>CP systems emphasize consistency and same view on
-                                        data for each node. What is available to one can
-                                        be unavailable to other</li>
-                                    <li>Nodes availability decision best when it is local</li>
-                                    <li>Due to coordination overhead, approach is less
-                                        scalable, typically 10s of servers</li>
-                                </ul>
-                                </font>
-                            </div>
-                        </div>
--->
+					<h6>Industry example: Halo 4</h6>
+                    <img src='images/halo.png' height="550px">
+                    <p>Orleans used as backbone for server part of Halo game,
+                    including: presence, statistics, cheat detection, etc</p>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Industry example: HPC</h6>
+                    <img src='images/San_Diego_Supercomputer_Center_East1.jpeg' height="450px">
+                    <p>San Diego Supercomputer Center uses Serf to coordinate
+                    compute resources in multiple locations, cluster size is about 2k nodes</p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
@@ -327,6 +296,7 @@
 					<h6>Consistent Hashing. Virtual nodes</h6>
                     <img src="images/consistent-hashing_14.png" height="400px">
 				</section>
+
 <!-- ####################################################################  -->
 				<section>
 					<h6>Cluster Membership Problem</h6>
@@ -334,6 +304,29 @@
                     <p>
                     We have routing and job distribution, lets figure out how
                     to add and remove nodes.</p>
+				</section>
+
+<!-- ####################################################################  -->
+				<section>
+					<h6>Why not just use Zookeeper/Consul/Ectd (or in other words ZAB, Paxos, Raft)?</h6>
+                    <ul>
+                        <li>CP systems emphasize consistency and same view on
+                            data for each node. What is available to one can
+                            be unavailable to other</li>
+                        <li>Nodes availability decision best when it is local</li>
+                        <li>Due to coordination overhead, approach is less
+                            scalable, typically 10s of servers</li>
+                        <li>Separate subsystem to support</li>
+                    </ul>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Typical system with coordination</h6>
+                    <img src='images/zookeeper.png' height="450px">
+                    <ul>
+                        <li>Zookeeper forces own view of state of the system</li>
+                        <li>Num number of possible commnunication links: $ \displaystyle edges = \frac{n (n -1) }{2} $ but for FD we use only $ n $ </li>
+                    </ul>
 				</section>
 <!-- ####################################################################  -->
 
