@@ -253,14 +253,14 @@
 				<section>
 					<h6>Required components</h6>
                     <ol>
-                        <li><i>Work distribution and routing</i></li>
-                        <li><i>Cluster membership update</i> </li>
-                        <li><i>Failure detector</i> - SWIM protocol</li>
+                        <li><i>Work distribution and routing</i> move job request to appropriate node</li>
+                        <li><i>Cluster membership update</i> provide means to determine nodes participating in cluster in stable and cluster resizing conditions</li>
+                        <li><i>Failure detector</i> periodically check nodes and remove unresponsive/dead ones</li>
                     </ol>
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Naive solution. Hard coded cluster nodes</h6>
+					<h6>Routing. Naive solution with hard coded cluster nodes</h6>
                     <ul>
                         <li>Very easy to implement, viable solution when dynamic resizing is not required</li>
                         <li>Does not support dynamic scaling in or scaling out</li>
@@ -269,32 +269,42 @@
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Consistent Hashing Solution</h6>
+					<h6>Routing. Consistent Hashing Solution</h6>
                     <img src="images/consitent_hashing.png" height="400px">
-                    <p>Technique invented at MIT, grant supported by DARPA and US Army</p>
+                    <p>Technique invented at MIT, grant supported by DARPA
+                    and US Army. This simple algorithms made Akamai multi
+                    billion worth company</p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Basic Idea</h6>
                     <img src="images/consistent-hashing_5.png" height="400px">
+                    <p>Consistent hashing is a special kind of hashing such that
+                    when a hash table is resized, only K/n keys
+                    need to be remapped on average, where K is the number of
+                    keys, and n is the number of slots</p>
                     <small><a href="http://blog.carlosgaldino.com/consistent-hashing.html">http://blog.carlosgaldino.com/consistent-hashing.html</a></small>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Adding node</h6>
                     <img src="images/consistent-hashing_9.png" height="400px">
-                    <p>Only part of keys moved to new addres, other partitions not changed</p>
+                    <p>In case of adding capacity, only fraction of
+                    keys will be moved</p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Removing node</h6>
                     <img src="images/consistent-hashing_10.png" height="400px">
-                    <p>In case of node failure next address will handle all requests</p>
+                    <p>In case of node failure next address will handle related keys</p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Virtual nodes</h6>
                     <img src="images/consistent-hashing_14.png" height="400px">
+                    <p>While the expected load of each server is a 1/n fraction
+                    of the objects, the realized load of each server will vary,
+                    to fix this virtual nodes are used</p>
 				</section>
 
 <!-- ####################################################################  -->
@@ -309,24 +319,29 @@
 <!-- ####################################################################  -->
 				<section>
 					<h6>Why not just use Zookeeper/Consul/Ectd (or in other words ZAB, Paxos, Raft)?</h6>
+                    <img src="images/cap.svg" height="350px">
+                    <font size="6">
                     <ul>
                         <li>CP systems emphasize consistency and same view on
                             data for each node. What is available to one can
                             be unavailable to other</li>
-                        <li>Nodes availability decision best when it is local</li>
                         <li>Due to coordination overhead, approach is less
                             scalable, typically 10s of servers</li>
                         <li>Separate subsystem to support</li>
                     </ul>
+                    </font>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Typical system with coordination</h6>
                     <img src='images/zookeeper.png' height="450px">
+                    <font size="6">
                     <ul>
                         <li>Zookeeper forces own view of state of the system</li>
                         <li>Num number of possible commnunication links: $ \displaystyle edges = \frac{n (n -1) }{2} $ but for FD we use only $ n $ </li>
+                        <li>Nodes availability decision best when it is local</li>
                     </ul>
+                    </font>
 				</section>
 <!-- ####################################################################  -->
 
@@ -404,15 +419,22 @@
 					<h6>Failure detectors for asynchronous systems</h6>
                     <img src="images/fd.svg" height="350px">
                     <font size="6">
+                    <ul>
                     <p>In asynchronous distributed systems, the detection of
                     <b>crash failures</b> is imperfect. There will be <i>false positives</i>
                     and <i>false negatives</i>. Two properties are relevant:
                     </p>
-                    <ul>
                         <li><b>Completeness.</b> Every crashed process is eventually suspected.</li>
                         <li><b>Accuracy.</b> No correct process is ever suspected</li>
                     </ul>
                     </font>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Basic failure detector</h6>
+                    <img src="images/swim_fd1.svg" height="400px">
+                    <p> Each node pings other nodesc:w
+
 				</section>
 <!-- ####################################################################  -->
 
@@ -424,65 +446,64 @@
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>SWIM FD</h6>
-                    <img src="images/swim_fd1.svg" height="400px">
-				</section>
-<!-- ####################################################################  -->
-				<section>
-					<h6>SWIM FD, indirect ping</h6>
+					<h6>SWIM Failure Detector</h6>
                     <img src="images/swim_fd2.svg" height="400px">
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Improvement: network coordinates</h6>
-                    <img src="images/dynamo_paper.png" height="400px">
+                    <img src="images/vivaldi.png" height="400px">
+                    <p>Famous paper from MIT, describes synthetic network
+                    coordinates, based on ping delays, used in Serf/Consul for
+                    datacenter failover</p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
+					<h6>Improvement: network coordinates visualisation</h6>
+                    <img src="images/vivaldi.gif" height="400px">
+                    <p>Notice coordinate drifting in space and stable distance between
+                    clusters</p>
+				</section>
+
+<!-- ####################################################################  -->
+				<section>
 					<h6>Improvement: partial view for huge clusters</h6>
-                    <img src="images/dynamo_paper.png" height="400px">
+                    <img src="images/hyparview.png" height="400px">
+                    <p>For huge clusters full membership is not scalable, paper proposes
+                    partial membership protocol. Nodes maintain active view for
+                    actively monitored nodes, and passive view for not monitored ones</p>
+				</section>
+
+<!-- ####################################################################  -->
+				<section>
+					<h6>Improvement: partial view incase of node failures</h6>
+                    <img src="images/hyparview_plot.png" height="400px">
+                    <p>Even for failure rates as high as 95%, HyParView still
+                    manages to maintain a reliability value in the order of
+                    deliveries to 90% of the active processes.
+                    </p>
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
 					<h6>Improvement: DHT for more balancing</h6>
-                    <img src="images/dynamo_paper.png" height="400px">
+                    <img src="images/orleans.png" height="400px">
+                    <p>Orleans uses a one-hop distributed hash table
+                    that maps GUIDs to their current activations’ locations
+                    by way of partitioning the GUID hash space onto the cluster
+                    nodes. Local caches are used to optimize away the network
+                    round-trip in 90% of the cases </p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Stateful Services Challenges</h6>
                     <ul>
-                        <li>Work distribution - could be addressed by consistent hashing and DHT combination</li>
-                        <li>Code deployment - huge state is takes time to persist on disk and restore data, see how FB fixed this</li>
-                        <li>Unbounded data structures - back pressure should be implemented on day one</li>
-                        <li>Memory management - GC pauses may influence FD</li>
-                        <li>Persistent strategies - where and how persist state, DB, append log etc</li>
+                        <li><b>Work distribution</b> - could be addressed by consistent hashing and DHT combination</li>
+                        <li><b>Code deployment</b> - huge state is takes time to persist on disk and restore data, see how FB fixed this</li>
+                        <li><b>Unbounded data structures</b> - back pressure should be implemented on day one</li>
+                        <li><b>Memory management</b> - GC pauses may influence FD</li>
+                        <li><b>Persistent strategies</b> - where and how persist state, DB, append log etc</li>
                     </ul>
-				</section>
-<!-- ####################################################################  -->
-<!-- 
-				<section>
-					<h6>Sync does not scale (TM)</h6>
-                    <pre><code class="hljs python" data-trim>
-from django.http import HttpResponse
-def my_view(request):
-    # blocks thread
-    r = requests.get('https://s3-us-west-2.amazonaws.com/dataintake/{uid}')
-    data = r.json()
-    # ...
-    return HttpResponse(status=200)
-                    </code></pre>
-				</section> 
--->
-<!-- ####################################################################  -->
-				<section>
-					<h3>References</h3>
-                    <ol>
-                        <li>Swim: Scalable weakly-consistent infection-style process group
-                            membership protocol - A Das, I Gupta, A Motivala</li>
-                        <li></li>
-                        <li></li>
-                    </ol>
 				</section>
 <!-- ####################################################################  -->
 				<section>
@@ -490,7 +511,7 @@ def my_view(request):
                        and check out aio-libs!
 					<p><a href="https://github.com/aio-libs">https://github.com/aio-libs</a></p>
                     <hr>
-					<p>slides <a href="https://jettify.github.io/pycon/">https://jettify.github.io/minskpy</a></p>
+					<p>slides <a href="https://jettify.github.io/pyconua2017/">https://jettify.github.io/pyconua2017</a></p>
 				</section>
 			</div>
 		</div>
