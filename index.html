@@ -417,24 +417,40 @@
 <!-- ####################################################################  -->
 				<section>
 					<h6>Failure detectors for asynchronous systems</h6>
-                    <img src="images/fd.svg" height="350px">
+                    <img src="images/fd.svg" height="300px">
                     <font size="6">
                     <ul>
                     <p>In asynchronous distributed systems, the detection of
-                    <b>crash failures</b> is imperfect. There will be <i>false positives</i>
-                    and <i>false negatives</i>. Two properties are relevant:
+                    <b>crash failures</b> is imperfect [2]. There will be <i>false positives</i>
+                    and <i>false negatives</i>. 
                     </p>
-                        <li><b>Completeness.</b> Every crashed process is eventually suspected.</li>
+                        <li><b>Completeness.</b> Every crashed process is eventually suspected</li>
                         <li><b>Accuracy.</b> No correct process is ever suspected</li>
+                        <li><b>Speed.</b> How fast we can detect fault node</li>
+                        <li><b>Network message load.</b> number of messages required during protocol period</li>
                     </ul>
                     </font>
 				</section>
+
 <!-- ####################################################################  -->
 				<section>
 					<h6>Basic failure detector</h6>
-                    <img src="images/swim_fd1.svg" height="400px">
-                    <p> Each node pings other nodesc:w
+                    <img src="images/hearbeet_fd.svg" height="400px">
+                    <p>Each process periodically sends out an incremented
+                    heartbeat counter to the outside world. Another
+                    process is detected as failed when a heartbeat is not received
+                    from it for some time</p>
+				</section>
 
+<!-- ####################################################################  -->
+				<section>
+					<h6>Basic failure detector. Properties</h6>
+                    <ul>
+                        <li><b>Completeness</b> each process eventually miss heartbeat</li>
+                        <li><b>Speed</b> configurable, as little as protocol interval</li>
+                        <li><b>Accuracy</b> high, depends on speed</li>
+                        <li><b>Network message load.</b> $O(n^2)$ each node sends message to all other nodes</li>
+                    </ul>
 				</section>
 <!-- ####################################################################  -->
 
@@ -448,6 +464,55 @@
 				<section>
 					<h6>SWIM Failure Detector</h6>
                     <img src="images/swim_fd2.svg" height="400px">
+                    <font size="6">
+                    <p>SWIM additional to ping/ack protocol adds indirect probing subgroup of
+                    members to relay both pings and acks. The rationale for
+                    using this approach, rather than sending k ping messages
+                    directly to the peer, or relaying back acks in reply to ping-reqs
+                    directly back to, is to avoid the effect of any congestion
+                    on the network path between nodes.
+                    </p></font>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>SWIM Failure Detector. Properties</h6>
+                    <ul>
+                        <li><b>Completeness</b> each process eventually will be pinged</li>
+                        <li><b>Speed</b> configurable, 1 protocol interval</li>
+                        <li><b>Accuracy</b> 99.9 % with delivery probability 0.95 and k=3 </li>
+                        <li><b>Network message load.</b> $O(n)$ ($4k+2)n$)</li>
+                    </ul>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>SWIM Failure Detector. Accuracy improvement, suspicion subprotocol</h6>
+                    <img src="images/swim_fsm.svg" height="300px">
+                    <p>Provides a mechanism to reduce the rate of false
+                    positives by “suspecting” a process before “declaring” it
+                    as failed within the group.
+                    </p>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>SWIM Failure Detector packet order </h6>
+                    <img src="images/message_order.svg" height="400px">
+                    <p>Ordering between messages is important, but total
+                    order is not required, only happens before/casual ordering.</p>
+                    <ul>
+                        <li>Logical timestamp for state updates</li>
+                        <li>Peer specific and only incremented by peer </li>
+                    </ul>
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>SWIM Failure Detector Against Network Partitions</h6>
+                    <img src="images/net_partition.svg" height="350px">
+                    <p>Nodes in each subnet can talk to each as result
+                    declares peers on other subnet as dead. How we can recover cluster after network heal?</p>
+                    <ul>
+                        <li>Do not purge nodes on dead</li>
+                        <li>Periodically try to rejoin</li>
+                    </ul>
 				</section>
 <!-- ####################################################################  -->
 				<section>
@@ -520,6 +585,8 @@
                         <li>Dabek, Frank, et al. <i>"Vivaldi: A decentralized network coordinate system."</i> ACM SIGCOMM Computer Communication Review 34.4 (2004): 15-26.</li>
                         <li>Leitao, Joao, José Pereira, and Luis Rodrigues. <i>"HyParView: A membership protocol for reliable gossip-based broadcast."</i> Dependable Systems and Networks, 2007. DSN'07. 37th Annual IEEE/IFIP International Conference on. IEEE, 2007.</li>
                         <li>Stoica, Ion, et al. <i>"Chord: A scalable peer-to-peer lookup service for internet applications."</i> ACM SIGCOMM Computer Communication Review 31.4 (2001): 149-160.</li>
+                        <li>Bailis, Peter, and Kyle Kingsbury. <i>"The network is reliable."</i> Queue 12.7 (2014): 20.</li>
+                        <li>Lamport, Leslie. <i>"Time, clocks, and the ordering of events in a distributed system."</i> Communications of the ACM 21.7 (1978): 558-565.b</li>
                     </ol>
                     </font>
 				</section>
