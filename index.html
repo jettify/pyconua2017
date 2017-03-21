@@ -414,11 +414,12 @@
                     <p>We can route jobs and communicate cluster update,
                     last component is failure detector.</p>
 				</section>
+
 <!-- ####################################################################  -->
 				<section>
 					<h6>Failure detectors for asynchronous systems</h6>
                     <img src="images/fd.svg" height="300px">
-                    <font size="6">
+                    <font size="5">
                     <ul>
                     <p>In asynchronous distributed systems, the detection of
                     <b>crash failures</b> is imperfect [2]. There will be <i>false positives</i>
@@ -429,7 +430,9 @@
                         <li><b>Speed.</b> How fast we can detect fault node</li>
                         <li><b>Network message load.</b> number of messages required during protocol period</li>
                     </ul>
+                    Chandra, Tushar Deepak, and Sam Toueg. <i>"Unreliable failure detectors for reliable distributed systems."</i> Journal of the ACM (JACM) 43.2 (1996): 225-267.
                     </font>
+
 				</section>
 
 <!-- ####################################################################  -->
@@ -456,7 +459,7 @@
 
 				<section>
 					<h6>SWIM failure detector</h6>
-                    <img src="images/dynamo_paper.png" height="400px">
+                    <img src="images/swim_paper.png" height="400px">
                     <p>SWIM: <b>S</b>calable <b>W</b>eakly-consistent <b>I</b>nfection-style
                     <b>P</b>rocess Group Membership. Protocol</p>
 				</section>
@@ -514,6 +517,16 @@
                         <li>Periodically try to rejoin</li>
                     </ul>
 				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Problem solved!</h6>
+                    <img src="images/problem_3.svg" height="450px">
+                    <p>We have all required components: request routing,
+                    cluster membership protocol and failure detection. Discussed
+                    principles implemented in all mentioned frameworks.
+                    What other improvements we can add?</p>
+				</section>
+
 <!-- ####################################################################  -->
 				<section>
 					<h6>Improvement: network coordinates</h6>
