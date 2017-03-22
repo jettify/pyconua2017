@@ -101,45 +101,61 @@
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Issues with Stateless services</h6>
-                    <ul>
-                        <li>Not all problems could be solved with stateless
-                            approach, for example soft real time ones</li>
-                        <li>Hard to be stateless, when state is huge and
-                            pulling it form DB or serialization is very
-                            expensive</li>
-                        <li>We have all sorts of nasty problems when our
-                            database should be sharded and database specifics
-                            leaks into application</li>
-                        <li>It’s wasteful to repeatedly pull resources into
-                            load balanced services</li>
-                    </ul>
+					<h3>Issues with Stateless services</h3>
+                    <p>
+                        <ul>
+                            <li>Soft real time is requirement</li>
+                            <li>State serialization</li>
+                            <li>DB leaky transactions</li>
+                            <li>Wasteful data fetching</li>
+                        </ul>
+                    </p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Stateless Service Example</h6>
-                    <img src="images/stateless.svg" height="500px">
+					<h4>Stateless Service Example</h4>
                     <p>Notice that user data fetched several times and cached
                     on multiple servers.</p>
+                    <img src="images/stateless.svg" height="500px">
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Benefits of Stateful Services</h6>
+					<h3>Benefits of Stateful Services</h3>
                     <ul>
-                        <li>Data locality, logic executed where data is stored
+                        <li><b>Data locality</b>, logic executed where data is stored
                             with fast access</li>
-                        <li>"Stronger" consistency with sticky connections</li>
-                        <li>Hight performance, no need to fetch state to the
+                        <li><b>Stronger consistency</b> with sticky connections</li>
+                        <li><b>Higher performance</b>, no need to fetch state to the
                             load balanced node, data already is there</li>
                     </ul>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Stateful Service Example</h6>
-                    <img src="images/statefull.svg" height="500px">
                     <p>Avoided are extra trips to the database which reduces
                     latency. Even if the database is down the request can be
                     handled.</p>
+                    <img src="images/statefull.svg" height="500px">
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Industry example: UBER</h6>
+                    <p>Geospatial index service to match driver and user</p>
+                    <img src='images/uber.png' height="450px">
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Industry example: Halo 4</h6>
+                    <p>Orleans used as backbone for server part of Halo game,
+                    including: presence, statistics, cheat detection, etc</p>
+                    <img src='images/halo.png' height="550px">
+				</section>
+<!-- ####################################################################  -->
+				<section>
+					<h6>Industry example: HPC</h6>
+                    <img src='images/San_Diego_Supercomputer_Center_East1.jpeg' height="450px">
+                    <p>San Diego Supercomputer Center uses Serf to coordinate
+                    compute resources in multiple locations, cluster size is about 2k nodes</p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
@@ -196,27 +212,6 @@
                             </tr>
                         </table>
                         </small>
-				</section>
-<!-- ####################################################################  -->
-				<section>
-					<h6>Industry example: UBER</h6>
-                    <img src='images/uber.png' height="450px">
-                    <p>Driver sends volatile location information to dedicated server, updates replicated to neigbour
-                    nodes. User with close location will be routed to same node as driver.</p>
-				</section>
-<!-- ####################################################################  -->
-				<section>
-					<h6>Industry example: Halo 4</h6>
-                    <img src='images/halo.png' height="550px">
-                    <p>Orleans used as backbone for server part of Halo game,
-                    including: presence, statistics, cheat detection, etc</p>
-				</section>
-<!-- ####################################################################  -->
-				<section>
-					<h6>Industry example: HPC</h6>
-                    <img src='images/San_Diego_Supercomputer_Center_East1.jpeg' height="450px">
-                    <p>San Diego Supercomputer Center uses Serf to coordinate
-                    compute resources in multiple locations, cluster size is about 2k nodes</p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
@@ -497,7 +492,7 @@
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>SWIM Failure Detector packet order </h6>
+					<h6>SWIM VS packet order </h6>
                     <img src="images/message_order.svg" height="400px">
                     <p>Ordering between messages is important, but total
                     order is not required, only happens before/casual ordering.</p>
@@ -508,7 +503,7 @@
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>SWIM Failure Detector Against Network Partitions</h6>
+					<h6>SWIM vs Network Partitions</h6>
                     <img src="images/net_partition.svg" height="350px">
                     <p>Nodes in each subnet can talk to each as result
                     declares peers on other subnet as dead. How we can recover cluster after network heal?</p>
