@@ -148,18 +148,18 @@
 					<h6>Industry example: Halo 4</h6>
                     <p>Orleans used as backbone for server part of Halo game,
                     including: presence, statistics, cheat detection, etc</p>
-                    <img src='images/halo.png' height="550px">
+                    <img src='images/halo.png' height="450px">
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Industry example: HPC</h6>
-                    <img src='images/San_Diego_Supercomputer_Center_East1.jpeg' height="450px">
                     <p>San Diego Supercomputer Center uses Serf to coordinate
                     compute resources in multiple locations, cluster size is about 2k nodes</p>
+                    <img src='images/San_Diego_Supercomputer_Center_East1.jpeg' height="450px">
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Overview of frameworks for application clustering</h6>
+					<h6>Overview of frameworks for building cluster aware systems</h6>
                     <small>
                         <table>
                             <tr>
@@ -167,6 +167,12 @@
                                 <th>Language</th>
                                 <th>Developer</th>
                                 <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td><b>???</b></td>
+                                <td><b>Python</b></td>
+                                <td><b>???</b></td>
+                                <td><b>???</b></td>
                             </tr>
                             <tr>
                                 <td><a href="https://github.com/uber/ringpop-node">RingPop</a></td>
@@ -204,42 +210,35 @@
                                 <td>Lightblend</td>
                                 <td>General purpose distribute systems framework, often used as microservies platform</td>
                             </tr>
-                            <tr>
-                                <td>???</td>
-                                <td>Python</td>
-                                <td>???</td>
-                                <td>???</td>
-                            </tr>
                         </table>
                         </small>
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Real world problem for data scientists: Prediction service</h6>
+					<h6>Lets try to solve close to real world problem: Prediction service</h6>
                     <ul>
-                        <p><i>We need scalable service, where user can upload models, and use them
-                    in their APIs. For instance consider payment service, which
-                    has models to detect fraud transaction or models that detects
-                    strange user behaviour etc. User should only care about: </i></p>
-                        <li>Deploy models to prediction servers</li>
-                        <li>Hit models with API calls</li>
+                        <p>Services that predicts reselling prices of different
+                        products, based on product specification</p>
+
+                        <li>User enters used product specs, and obtains price estimate</li>
+                        <li>Each product category</li>
                     </ul>
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Problem definition</h6>
+					<h6>Functional requirements</h6>
                         <div style="width: 100%;overflow:auto;">
                             <div style="float:left; width: 70%">
                     <img src='images/problem_definition.svg' height="400px">
                             </div>
                             <div style="float:right;width: 30%">
-                                <font size="5">
-                                    Requirements:
+                                <font size="6">
+                                 <p></p>
                                 <ul>
-                                    <li><b>Dynamic scaling</b>: servers could be added and removed on demand</li>
-                                    <li><b>Fault tolerance</b>: cluster should be partially alive in case of network issues</li>
-                                    <li><b>Exploit data locality</b>: model size is large, we need to avoid model reloading</li>
-                                    <li><b>Flexible API</b>: user can connect to any node</li>
+                                    <li><b>Dynamic scaling</b></li>
+                                    <li><b>Fault tolerance</b></li>
+                                    <li><b>Exploit data locality</b></li>
+                                    <li><b>Flexible API</b></li>
                                 </ul>
                                 </font>
                             </div>
@@ -248,16 +247,17 @@
 				<section>
 					<h6>Required components</h6>
                     <ol>
-                        <li><i>Work distribution and routing</i> move job request to appropriate node</li>
-                        <li><i>Cluster membership update</i> provide means to determine nodes participating in cluster in stable and cluster resizing conditions</li>
-                        <li><i>Failure detector</i> periodically check nodes and remove unresponsive/dead ones</li>
+                        <li><b>Work distribution and routing</b> move job request to appropriate node</li>
+                        <li><b>Cluster membership update</b> provide means to determine nodes participating in cluster in stable and cluster resizing conditions</li>
+                        <li><b>Failure detector</b> periodically check nodes and remove unresponsive/dead ones</li>
                     </ol>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Routing. Naive solution with hard coded cluster nodes</h6>
                     <ul>
-                        <li>Very easy to implement, viable solution when dynamic resizing is not required</li>
+                        <li>Very easy to implement, viable solution when dynamic
+                            resizing is not required</li>
                         <li>Does not support dynamic scaling in or scaling out</li>
                         <li>Requires cluster restart for changing nodes configuration</li>
                     </ul>
@@ -266,102 +266,106 @@
 				<section>
 					<h6>Routing. Consistent Hashing Solution</h6>
                     <img src="images/consitent_hashing.png" height="400px">
-                    <p>Technique invented at MIT, grant supported by DARPA
-                    and US Army. This simple algorithms made Akamai multi
-                    billion worth company</p>
+                    <p>This simple algorithms made Akamai multi billion worth company</p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Basic Idea</h6>
+                    <p>Consistent hashing minimizes number of keys, need to be remapped</p>
                     <img src="images/consistent-hashing_5.png" height="400px">
-                    <p>Consistent hashing is a special kind of hashing such that
-                    when a hash table is resized, only K/n keys
-                    need to be remapped on average, where K is the number of
-                    keys, and n is the number of slots</p>
                     <small><a href="http://blog.carlosgaldino.com/consistent-hashing.html">http://blog.carlosgaldino.com/consistent-hashing.html</a></small>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Adding node</h6>
-                    <img src="images/consistent-hashing_9.png" height="400px">
                     <p>In case of adding capacity, only fraction of
                     keys will be moved</p>
+                    <img src="images/consistent-hashing_9.png" height="400px">
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Removing node</h6>
-                    <img src="images/consistent-hashing_10.png" height="400px">
                     <p>In case of node failure next address will handle related keys</p>
+                    <img src="images/consistent-hashing_10.png" height="400px">
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Virtual nodes</h6>
+                    <p>Virtual nodes help with keys distribution, moving it close to 1/n</p>
                     <img src="images/consistent-hashing_14.png" height="400px">
-                    <p>While the expected load of each server is a 1/n fraction
-                    of the objects, the realized load of each server will vary,
-                    to fix this virtual nodes are used</p>
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
 					<h6>Cluster Membership Problem</h6>
-                    <img src="images/problem_1.svg" height="500px">
-                    <p>
-                    We have routing and job distribution, lets figure out how
+                    <p>We have routing and job distribution, lets figure out how
                     to add and remove nodes.</p>
+                    <img src="images/problem_1.svg" height="500px">
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
 					<h6>Why not just use Zookeeper/Consul/Ectd (or in other words ZAB, Paxos, Raft)?</h6>
-                    <img src="images/cap.svg" height="350px">
-                    <font size="6">
-                    <ul>
-                        <li>CP systems emphasize consistency and same view on
-                            data for each node. What is available to one can
-                            be unavailable to other</li>
-                        <li>Due to coordination overhead, approach is less
-                            scalable, typically 10s of servers</li>
-                        <li>Separate subsystem to support</li>
-                    </ul>
-                    </font>
+                        <div style="width: 100%;overflow:auto;">
+                            <div style="float:left; width: 60%">
+                                <p><img src="images/cap.svg" height="450px"></p>
+                            </div>
+                            <div style="float:right;width: 40%; vertical-align: left;">
+                                <p><b>Issues</b></p>
+                                <ul>
+                                    <li>Availability</li>
+                                    <li>Performance</li>
+                                    <li>Network partitions</li>
+                                    <li>Operation overhead</li>
+                                </ul>
+                            </div>
+                        </div>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Typical system with coordination</h6>
-                    <img src='images/zookeeper.png' height="450px">
-                    <font size="6">
-                    <ul>
-                        <li>Zookeeper forces own view of state of the system</li>
-                        <li>Num number of possible commnunication links: $ \displaystyle edges = \frac{n (n -1) }{2} $ but for FD we use only $ n $ </li>
-                        <li>Nodes availability decision best when it is local</li>
-                    </ul>
-                    </font>
+                        <div style="width: 100%;overflow:auto;">
+                            <div style="float:left; width: 60%">
+                                <img src='images/zookeeper.png' height="450px">
+                            </div>
+                            <div style="float:right;width: 40%; vertical-align: left;">
+                            <ul>
+                                <li>Zookeeper forces own view</li>
+                                <li>Possible links: $ \frac{n (n -1) }{2} $ but for FD used only $ n $ </li>
+                                <li>Nodes availability decision best when it is local</li>
+                            </ul>
+                            </div>
+                        </div>
 				</section>
 <!-- ####################################################################  -->
 
 				<section>
-					<h6>Cluster Membership Problem. Naive solution</h6>
-                    <p> Each node should be able to broadcast states updates, and each
-                    not faulty node should be able to receive this message.
-                        </p>
+					<h6>Cluster Membership Update Problem. Naive solution</h6>
+                    <p><b>Broadcast</b>: could be used for cluster membership update</p>
                     <ul>
-                        <li>Use network level technology to broadcast messages,
-                            usually disabled on clouds</li>
-                        <li>Send message one by one to each peer. Not efficient
-                            and has reliability problems</li>
+                        <li>Use network broadcast (usually disabled)</li>
+                        <li>Send message one by one to each peer(not reliable)</li>
                     </ul>
 				</section>
 <!-- ####################################################################  -->
 
 				<section>
 					<h6>Gossip Overview</h6>
-                    <p>
-                    <img src="images/gossip2.svg" height="500px">
-                    </p>
-                    Basic gossip protocol: send message to k random peers,
-                    peers retransmit message to next k random peers, in log(n)
-                    steps, information will be disseminated.
+                        <div style="width: 100%;overflow:auto;">
+                            <div style="float:left; width: 60%">
+                                <p><img src="images/gossip2.svg" height="500px"></p>
+                            </div>
+                            <div style="float:right;width: 40%; vertical-align: left;">
+                                <p><b>Basic gossip protocol</b></p>
+                                <ul>
+                                    <li>Send message to k random peers</li>
+                                    <li>peers retransmit message to next k random peers</li>
+                                    <li>in $\log(n)$ steps, information will be disseminated</li>
+                                </ul>
+                                </p>
+                            </div>
+                        </div>
+
 				</section>
 <!-- ####################################################################  -->
 
@@ -384,60 +388,75 @@
                                     </ul>
                                 </font>
                             </div>
-                    <p>
+                            <p>&nbsp;</p>
+                            <p>Properties</p>
                     <ul>
-                        <li><i>Low latency</i> - data disseminated withing $c\log(n)$ rounds</li>
-                        <li><i>Reliability/Fault tolerance</i> - after few rounds it is very hard to kill information spread</li>
-                        <li><i>Lightweight</i> - only handful number of messages are transmitted $ cb\log(n)$</li>
+                        <li><b>Low latency</b></li>
+                        <li><b>Fault tolerance</b></li>
+                        <li><b>Lightweight</b> </li>
+                        <!--
+                        Low latency - data disseminated within clog(n)clog⁡(n) rounds
+                        Reliability/Fault tolerance - after few rounds it is very hard to kill information spread
+                        Lightweight - only handful number of messages are transmitted cblog(n)
+                        -->
                     </ul>
-                    </p>
+                        </div>
 				</section>
 <!-- ####################################################################  -->
 
 				<section>
-					<h6>Gossip Protocol and Packet loss</h6>
-                    <img src="images/packet_loss.svg" height="500px">
+					<h6>Gossip Protocol vs Packet loss</h6>
                     <p>Heavy packet loss does not stop dissemination, it simply
                     will take a bit longer, 2 times for 50% loss.</p>
-
+                    <img src="images/packet_loss.svg" height="450px">
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
 					<h6>Failure detection protocol</h6>
-                    <img src="images/problem_2.svg" height="500px">
                     <p>We can route jobs and communicate cluster update,
                     last component is failure detector.</p>
+                    <img src="images/problem_2.svg" height="500px">
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
 					<h6>Failure detectors for asynchronous systems</h6>
                     <img src="images/fd.svg" height="300px">
-                    <font size="5">
                     <ul>
                     <p>In asynchronous distributed systems, the detection of
-                    <b>crash failures</b> is imperfect [2]. There will be <i>false positives</i>
-                    and <i>false negatives</i>. 
-                    </p>
-                        <li><b>Completeness.</b> Every crashed process is eventually suspected</li>
-                        <li><b>Accuracy.</b> No correct process is ever suspected</li>
-                        <li><b>Speed.</b> How fast we can detect fault node</li>
-                        <li><b>Network message load.</b> number of messages required during protocol period</li>
+                    <b>crash failures</b> is imperfect. There will be <i>false positives</i>
+                    and <i>false negatives</i>.
                     </ul>
-                    Chandra, Tushar Deepak, and Sam Toueg. <i>"Unreliable failure detectors for reliable distributed systems."</i> Journal of the ACM (JACM) 43.2 (1996): 225-267.
+
+                    <font size="4">
+                    <p>Chandra, Tushar Deepak, and Sam Toueg. <i>"Unreliable failure detectors for reliable distributed systems."</i> Journal of the ACM (JACM) 43.2 (1996): 225-267.</p>
                     </font>
 
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
+					<h6>Failure detectors. Properties</h6>
+                    <ul>
+                        <li><b>Completeness</b> - every crashed process is eventually suspected</li>
+                        <li><b>Accuracy</b> - no correct process is ever suspected</li>
+                        <li><b>Speed</b> - how fast we can detect fault node</li>
+                        <li><b>Network message load</b> - number of messages required during protocol period</li>
+                    </ul>
+
+				</section>
+
+<!-- ####################################################################  -->
+				<section>
 					<h6>Basic failure detector</h6>
+                    <ul>
+                        <li>Each process periodically sends out an incremented
+                            heartbeat counter to the outside world.</li>
+                        <li>Another process is detected as failed when a
+                            heartbeat is not received from it for some time</li>
+                    </ul>
                     <img src="images/hearbeet_fd.svg" height="400px">
-                    <p>Each process periodically sends out an incremented
-                    heartbeat counter to the outside world. Another
-                    process is detected as failed when a heartbeat is not received
-                    from it for some time</p>
 				</section>
 
 <!-- ####################################################################  -->
@@ -447,7 +466,7 @@
                         <li><b>Completeness</b> each process eventually miss heartbeat</li>
                         <li><b>Speed</b> configurable, as little as protocol interval</li>
                         <li><b>Accuracy</b> high, depends on speed</li>
-                        <li><b>Network message load.</b> $O(n^2)$ each node sends message to all other nodes</li>
+                        <li><b>Network message load</b> $O(n^2)$ each node sends message to all other nodes</li>
                     </ul>
 				</section>
 <!-- ####################################################################  -->
@@ -461,15 +480,20 @@
 <!-- ####################################################################  -->
 				<section>
 					<h6>SWIM Failure Detector</h6>
-                    <img src="images/swim_fd2.svg" height="400px">
-                    <font size="6">
-                    <p>SWIM additional to ping/ack protocol adds indirect probing subgroup of
-                    members to relay both pings and acks. The rationale for
-                    using this approach, rather than sending k ping messages
-                    directly to the peer, or relaying back acks in reply to ping-reqs
-                    directly back to, is to avoid the effect of any congestion
-                    on the network path between nodes.
-                    </p></font>
+                    <div style="width: 100%;overflow:auto;">
+                        <div style="float:left; width: 60%">
+                            <img src="images/swim_fd2.svg" height="400px">
+                        </div>
+                        <div style="float:right;width: 40%">
+                            <font size="6">
+                             <p></p>
+                             <ul>
+                             SWIM uses ping as primary way to do FD, and indirect ping for better tolerance to network
+                             partitions
+                             </ul>
+                            </font>
+                        </div>
+                    </div>
 				</section>
 <!-- ####################################################################  -->
 				<section>
@@ -483,7 +507,7 @@
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>SWIM Failure Detector. Accuracy improvement, suspicion subprotocol</h6>
+					<h6>SWIM vs connection loss. Suspicion subprotocol</h6>
                     <img src="images/swim_fsm.svg" height="300px">
                     <p>Provides a mechanism to reduce the rate of false
                     positives by “suspecting” a process before “declaring” it
@@ -492,8 +516,8 @@
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>SWIM VS packet order </h6>
-                    <img src="images/message_order.svg" height="400px">
+					<h6>SWIM vs packet order </h6>
+                    <img src="images/message_order.svg" height="300px">
                     <p>Ordering between messages is important, but total
                     order is not required, only happens before/casual ordering.</p>
                     <ul>
@@ -504,22 +528,39 @@
 <!-- ####################################################################  -->
 				<section>
 					<h6>SWIM vs Network Partitions</h6>
-                    <img src="images/net_partition.svg" height="350px">
                     <p>Nodes in each subnet can talk to each as result
-                    declares peers on other subnet as dead. How we can recover cluster after network heal?</p>
-                    <ul>
+                    declares peers on other subnet as dead. </p>
+                    <div style="width: 100%;overflow:auto;">
+                        <div style="float:left; width: 70%">
+                            <img src="images/net_partition.svg" height="350px">
+                        </div>
+                        <div style="float:right;width: 30%">
+                            <font size="6">
+                             <p></p>
+                             <ul><i>How we can recover cluster after network heal?</i>
                         <li>Do not purge nodes on dead</li>
                         <li>Periodically try to rejoin</li>
                     </ul>
+                            </font>
+                        </div>
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Problem solved!</h6>
-                    <img src="images/problem_3.svg" height="450px">
-                    <p>We have all required components: request routing,
-                    cluster membership protocol and failure detection. Discussed
-                    principles implemented in all mentioned frameworks.
-                    What other improvements we can add?</p>
+					<h6>Problem solved! Implementaion details</h6>
+                    <div style="width: 100%;overflow:auto;">
+                        <div style="float:left; width: 70%">
+                            <img src="images/problem_3.svg" height="450px">
+                        </div>
+                        <div style="float:right;width: 30%">
+                            <font size="6">
+                             <p></p>
+                             <ul>
+                                <li>How <i>python</i> can help with implementation?</li>
+                                <li>What frameworks to use?</li>
+                             </ul>
+                            </font>
+                        </div>
+                    </div>
 				</section>
 
 <!-- ####################################################################  -->
@@ -541,16 +582,15 @@
 <!-- ####################################################################  -->
 				<section>
 					<h6>Improvement: partial view for huge clusters</h6>
-                    <img src="images/hyparview.png" height="400px">
+                    <img src="images/hyparview.png" height="350px">
                     <p>For huge clusters full membership is not scalable, paper proposes
-                    partial membership protocol. Nodes maintain active view for
-                    actively monitored nodes, and passive view for not monitored ones</p>
+                    partial membership protocol</p>
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
-					<h6>Improvement: partial view incase of node failures</h6>
-                    <img src="images/hyparview_plot.png" height="400px">
+					<h6>Improvement: partial view in case of node failures</h6>
+                    <img src="images/hyparview_plot.png" height="350px">
                     <p>Even for failure rates as high as 95%, HyParView still
                     manages to maintain a reliability value in the order of
                     deliveries to 90% of the active processes.
@@ -562,21 +602,19 @@
 					<h6>Improvement: DHT for more balancing</h6>
                     <img src="images/orleans.png" height="400px">
                     <p>Orleans uses a one-hop distributed hash table
-                    that maps GUIDs to their current activations’ locations
-                    by way of partitioning the GUID hash space onto the cluster
-                    nodes. Local caches are used to optimize away the network
-                    round-trip in 90% of the cases </p>
+                    that maps actors between machines, as result actors
+                    could be moved across the cluster</p>
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
 					<h6>Stateful Services Challenges</h6>
                     <ul>
-                        <li><b>Work distribution</b> - could be addressed by consistent hashing and DHT combination</li>
-                        <li><b>Code deployment</b> - huge state is takes time to persist on disk and restore data, see how FB fixed this</li>
-                        <li><b>Unbounded data structures</b> - back pressure should be implemented on day one</li>
-                        <li><b>Memory management</b> - GC pauses may influence FD</li>
-                        <li><b>Persistent strategies</b> - where and how persist state, DB, append log etc</li>
+                        <li><b>Work distribution</b></li>
+                        <li><b>Code deployment</b></li>
+                        <li><b>Unbounded data structures</b></li>
+                        <li><b>Memory management</b></li>
+                        <li><b>Persistent strategies</b></li>
                     </ul>
 				</section>
 
@@ -603,10 +641,10 @@
 <!-- ####################################################################  -->
 				<section>
 					<h2>Thank you!</h2>
-                       and check out aio-libs!
-					<p><a href="https://github.com/aio-libs">https://github.com/aio-libs</a></p>
                     <hr>
-					<p>slides <a href="https://jettify.github.io/pyconua2017/">https://jettify.github.io/pyconua2017</a></p>
+                    <p><img src="images/qrcode.svg" height="300px"></p>
+					<p>aio-libs: <a href="https://github.com/aio-libs">https://github.com/aio-libs</a></p>
+					<p>slides: <a href="https://jettify.github.io/pyconua2017/">https://jettify.github.io/pyconua2017</a></p>
 				</section>
 			</div>
 		</div>
