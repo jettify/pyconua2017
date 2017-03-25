@@ -148,18 +148,18 @@
 					<h6>Industry example: Halo 4</h6>
                     <p>Orleans used as backbone for server part of Halo game,
                     including: presence, statistics, cheat detection, etc</p>
-                    <img src='images/halo.png' height="550px">
+                    <img src='images/halo.png' height="450px">
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Industry example: HPC</h6>
-                    <img src='images/San_Diego_Supercomputer_Center_East1.jpeg' height="450px">
                     <p>San Diego Supercomputer Center uses Serf to coordinate
                     compute resources in multiple locations, cluster size is about 2k nodes</p>
+                    <img src='images/San_Diego_Supercomputer_Center_East1.jpeg' height="450px">
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Overview of frameworks for application clustering</h6>
+					<h6>Overview of frameworks for building cluster aware systems</h6>
                     <small>
                         <table>
                             <tr>
@@ -167,6 +167,12 @@
                                 <th>Language</th>
                                 <th>Developer</th>
                                 <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td><b>???</b></td>
+                                <td><b>Python</b></td>
+                                <td><b>???</b></td>
+                                <td><b>???</b></td>
                             </tr>
                             <tr>
                                 <td><a href="https://github.com/uber/ringpop-node">RingPop</a></td>
@@ -204,42 +210,35 @@
                                 <td>Lightblend</td>
                                 <td>General purpose distribute systems framework, often used as microservies platform</td>
                             </tr>
-                            <tr>
-                                <td>???</td>
-                                <td>Python</td>
-                                <td>???</td>
-                                <td>???</td>
-                            </tr>
                         </table>
                         </small>
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Real world problem for data scientists: Prediction service</h6>
+					<h6>Lets try to solve close to real world problem: Prediction service</h6>
                     <ul>
-                        <p><i>We need scalable service, where user can upload models, and use them
-                    in their APIs. For instance consider payment service, which
-                    has models to detect fraud transaction or models that detects
-                    strange user behaviour etc. User should only care about: </i></p>
-                        <li>Deploy models to prediction servers</li>
-                        <li>Hit models with API calls</li>
+                        <p>Services that predicts reselling prices of different
+                        products, based on product specification</p>
+
+                        <li>User enters used product specs, and obtains price estimate</li>
+                        <li>Each product category</li>
                     </ul>
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Problem definition</h6>
+					<h6>Functional requirements</h6>
                         <div style="width: 100%;overflow:auto;">
                             <div style="float:left; width: 70%">
                     <img src='images/problem_definition.svg' height="400px">
                             </div>
                             <div style="float:right;width: 30%">
-                                <font size="5">
-                                    Requirements:
+                                <font size="6">
+                                 <p></p>
                                 <ul>
-                                    <li><b>Dynamic scaling</b>: servers could be added and removed on demand</li>
-                                    <li><b>Fault tolerance</b>: cluster should be partially alive in case of network issues</li>
-                                    <li><b>Exploit data locality</b>: model size is large, we need to avoid model reloading</li>
-                                    <li><b>Flexible API</b>: user can connect to any node</li>
+                                    <li><b>Dynamic scaling</b></li>
+                                    <li><b>Fault tolerance</b></li>
+                                    <li><b>Exploit data locality</b></li>
+                                    <li><b>Flexible API</b></li>
                                 </ul>
                                 </font>
                             </div>
@@ -248,16 +247,17 @@
 				<section>
 					<h6>Required components</h6>
                     <ol>
-                        <li><i>Work distribution and routing</i> move job request to appropriate node</li>
-                        <li><i>Cluster membership update</i> provide means to determine nodes participating in cluster in stable and cluster resizing conditions</li>
-                        <li><i>Failure detector</i> periodically check nodes and remove unresponsive/dead ones</li>
+                        <li><b>Work distribution and routing</b> move job request to appropriate node</li>
+                        <li><b>Cluster membership update</b> provide means to determine nodes participating in cluster in stable and cluster resizing conditions</li>
+                        <li><b>Failure detector</b> periodically check nodes and remove unresponsive/dead ones</li>
                     </ol>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Routing. Naive solution with hard coded cluster nodes</h6>
                     <ul>
-                        <li>Very easy to implement, viable solution when dynamic resizing is not required</li>
+                        <li>Very easy to implement, viable solution when dynamic
+                            resizing is not required</li>
                         <li>Does not support dynamic scaling in or scaling out</li>
                         <li>Requires cluster restart for changing nodes configuration</li>
                     </ul>
@@ -266,77 +266,75 @@
 				<section>
 					<h6>Routing. Consistent Hashing Solution</h6>
                     <img src="images/consitent_hashing.png" height="400px">
-                    <p>Technique invented at MIT, grant supported by DARPA
-                    and US Army. This simple algorithms made Akamai multi
-                    billion worth company</p>
+                    <p>This simple algorithms made Akamai multi billion worth company</p>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Basic Idea</h6>
-                    <img src="images/consistent-hashing_5.png" height="400px">
                     <p>Consistent hashing is a special kind of hashing such that
                     when a hash table is resized, only K/n keys
                     need to be remapped on average, where K is the number of
                     keys, and n is the number of slots</p>
+                    <img src="images/consistent-hashing_5.png" height="400px">
                     <small><a href="http://blog.carlosgaldino.com/consistent-hashing.html">http://blog.carlosgaldino.com/consistent-hashing.html</a></small>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Adding node</h6>
-                    <img src="images/consistent-hashing_9.png" height="400px">
                     <p>In case of adding capacity, only fraction of
                     keys will be moved</p>
+                    <img src="images/consistent-hashing_9.png" height="400px">
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Removing node</h6>
-                    <img src="images/consistent-hashing_10.png" height="400px">
                     <p>In case of node failure next address will handle related keys</p>
+                    <img src="images/consistent-hashing_10.png" height="400px">
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Virtual nodes</h6>
-                    <img src="images/consistent-hashing_14.png" height="400px">
                     <p>While the expected load of each server is a 1/n fraction
                     of the objects, the realized load of each server will vary,
                     to fix this virtual nodes are used</p>
+                    <img src="images/consistent-hashing_14.png" height="400px">
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
 					<h6>Cluster Membership Problem</h6>
-                    <img src="images/problem_1.svg" height="500px">
-                    <p>
-                    We have routing and job distribution, lets figure out how
+                    <p>We have routing and job distribution, lets figure out how
                     to add and remove nodes.</p>
+                    <img src="images/problem_1.svg" height="500px">
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
 					<h6>Why not just use Zookeeper/Consul/Ectd (or in other words ZAB, Paxos, Raft)?</h6>
-                    <img src="images/cap.svg" height="350px">
-                    <font size="6">
-                    <ul>
-                        <li>CP systems emphasize consistency and same view on
-                            data for each node. What is available to one can
-                            be unavailable to other</li>
-                        <li>Due to coordination overhead, approach is less
-                            scalable, typically 10s of servers</li>
-                        <li>Separate subsystem to support</li>
-                    </ul>
-                    </font>
+                        <div style="width: 100%;overflow:auto;">
+                            <div style="float:left; width: 60%">
+                                <p><img src="images/cap.svg" height="450px"></p>
+                            </div>
+                            <div style="float:right;width: 40%; vertical-align: left;">
+                                <p><b>Issues</b></p>
+                                <ul>
+                                    <li>Availability</li>
+                                    <li>Performance</li>
+                                    <li>Network partitions</li>
+                                    <li>Operation overhead</li>
+                                </ul>
+                            </div>
+                        </div>
 				</section>
 <!-- ####################################################################  -->
 				<section>
 					<h6>Typical system with coordination</h6>
                     <img src='images/zookeeper.png' height="450px">
-                    <font size="6">
                     <ul>
                         <li>Zookeeper forces own view of state of the system</li>
                         <li>Num number of possible commnunication links: $ \displaystyle edges = \frac{n (n -1) }{2} $ but for FD we use only $ n $ </li>
                         <li>Nodes availability decision best when it is local</li>
                     </ul>
-                    </font>
 				</section>
 <!-- ####################################################################  -->
 
@@ -572,11 +570,11 @@
 				<section>
 					<h6>Stateful Services Challenges</h6>
                     <ul>
-                        <li><b>Work distribution</b> - could be addressed by consistent hashing and DHT combination</li>
-                        <li><b>Code deployment</b> - huge state is takes time to persist on disk and restore data, see how FB fixed this</li>
-                        <li><b>Unbounded data structures</b> - back pressure should be implemented on day one</li>
-                        <li><b>Memory management</b> - GC pauses may influence FD</li>
-                        <li><b>Persistent strategies</b> - where and how persist state, DB, append log etc</li>
+                        <li>Work distribution</b> - could be addressed by consistent hashing and DHT combination</li>
+                        <li>Code deployment</b> - huge state is takes time to persist on disk and restore data, see how FB fixed this</li>
+                        <li>Unbounded data structures</b> - back pressure should be implemented on day one</li>
+                        <li>Memory management</b> - GC pauses may influence FD</li>
+                        <li>Persistent strategies</b> - where and how persist state, DB, append log etc</li>
                     </ul>
 				</section>
 
