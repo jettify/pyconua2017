@@ -271,10 +271,7 @@
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Basic Idea</h6>
-                    <p>Consistent hashing is a special kind of hashing such that
-                    when a hash table is resized, only K/n keys
-                    need to be remapped on average, where K is the number of
-                    keys, and n is the number of slots</p>
+                    <p>Consistent hashing minimizes number of keys, need to be remapped</p>
                     <img src="images/consistent-hashing_5.png" height="400px">
                     <small><a href="http://blog.carlosgaldino.com/consistent-hashing.html">http://blog.carlosgaldino.com/consistent-hashing.html</a></small>
 				</section>
@@ -294,9 +291,7 @@
 <!-- ####################################################################  -->
 				<section>
 					<h6>Consistent Hashing. Virtual nodes</h6>
-                    <p>While the expected load of each server is a 1/n fraction
-                    of the objects, the realized load of each server will vary,
-                    to fix this virtual nodes are used</p>
+                    <p>Virtual nodes help with keys distribution, moving it close to 1/n</p>
                     <img src="images/consistent-hashing_14.png" height="400px">
 				</section>
 
@@ -329,37 +324,48 @@
 <!-- ####################################################################  -->
 				<section>
 					<h6>Typical system with coordination</h6>
-                    <img src='images/zookeeper.png' height="450px">
-                    <ul>
-                        <li>Zookeeper forces own view of state of the system</li>
-                        <li>Num number of possible commnunication links: $ \displaystyle edges = \frac{n (n -1) }{2} $ but for FD we use only $ n $ </li>
-                        <li>Nodes availability decision best when it is local</li>
-                    </ul>
+                        <div style="width: 100%;overflow:auto;">
+                            <div style="float:left; width: 60%">
+                                <img src='images/zookeeper.png' height="450px">
+                            </div>
+                            <div style="float:right;width: 40%; vertical-align: left;">
+                            <ul>
+                                <li>Zookeeper forces own view</li>
+                                <li>Possible links: $ \frac{n (n -1) }{2} $ but for FD used only $ n $ </li>
+                                <li>Nodes availability decision best when it is local</li>
+                            </ul>
+                            </div>
+                        </div>
 				</section>
 <!-- ####################################################################  -->
 
 				<section>
-					<h6>Cluster Membership Problem. Naive solution</h6>
-                    <p> Each node should be able to broadcast states updates, and each
-                    not faulty node should be able to receive this message.
-                        </p>
+					<h6>Cluster Membership Update Problem. Naive solution</h6>
+                    <p><b>Broadcast</b>: could be used for cluster membership update</p>
                     <ul>
-                        <li>Use network level technology to broadcast messages,
-                            usually disabled on clouds</li>
-                        <li>Send message one by one to each peer. Not efficient
-                            and has reliability problems</li>
+                        <li>Use network broadcast (usually disabled)</li>
+                        <li>Send message one by one to each peer(not reliable)</li>
                     </ul>
 				</section>
 <!-- ####################################################################  -->
 
 				<section>
 					<h6>Gossip Overview</h6>
-                    <p>
-                    <img src="images/gossip2.svg" height="500px">
-                    </p>
-                    Basic gossip protocol: send message to k random peers,
-                    peers retransmit message to next k random peers, in log(n)
-                    steps, information will be disseminated.
+                        <div style="width: 100%;overflow:auto;">
+                            <div style="float:left; width: 60%">
+                                <p><img src="images/gossip2.svg" height="500px"></p>
+                            </div>
+                            <div style="float:right;width: 40%; vertical-align: left;">
+                                <p><b>Basic gossip protocol</b></p>
+                                <ul>
+                                    <li>Send message to k random peers</li>
+                                    <li>peers retransmit message to next k random peers</li>
+                                    <li>in $\log(n)$ steps, information will be disseminated</li>
+                                </ul>
+                                </p>
+                            </div>
+                        </div>
+
 				</section>
 <!-- ####################################################################  -->
 
@@ -382,60 +388,75 @@
                                     </ul>
                                 </font>
                             </div>
-                    <p>
+                            <p>&nbsp;</p>
+                            <p>Properties</p>
                     <ul>
-                        <li><i>Low latency</i> - data disseminated withing $c\log(n)$ rounds</li>
-                        <li><i>Reliability/Fault tolerance</i> - after few rounds it is very hard to kill information spread</li>
-                        <li><i>Lightweight</i> - only handful number of messages are transmitted $ cb\log(n)$</li>
+                        <li><b>Low latency</b></li>
+                        <li><b>Fault tolerance</b></li>
+                        <li><b>Lightweight</b> </li>
+                        <!--
+                        Low latency - data disseminated within clog(n)clog⁡(n) rounds
+                        Reliability/Fault tolerance - after few rounds it is very hard to kill information spread
+                        Lightweight - only handful number of messages are transmitted cblog(n)
+                        -->
                     </ul>
-                    </p>
+                        </div>
 				</section>
 <!-- ####################################################################  -->
 
 				<section>
-					<h6>Gossip Protocol and Packet loss</h6>
-                    <img src="images/packet_loss.svg" height="500px">
+					<h6>Gossip Protocol vs Packet loss</h6>
                     <p>Heavy packet loss does not stop dissemination, it simply
                     will take a bit longer, 2 times for 50% loss.</p>
-
+                    <img src="images/packet_loss.svg" height="450px">
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
 					<h6>Failure detection protocol</h6>
-                    <img src="images/problem_2.svg" height="500px">
                     <p>We can route jobs and communicate cluster update,
                     last component is failure detector.</p>
+                    <img src="images/problem_2.svg" height="500px">
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
 					<h6>Failure detectors for asynchronous systems</h6>
                     <img src="images/fd.svg" height="300px">
-                    <font size="5">
                     <ul>
                     <p>In asynchronous distributed systems, the detection of
-                    <b>crash failures</b> is imperfect [2]. There will be <i>false positives</i>
-                    and <i>false negatives</i>. 
-                    </p>
-                        <li><b>Completeness.</b> Every crashed process is eventually suspected</li>
-                        <li><b>Accuracy.</b> No correct process is ever suspected</li>
-                        <li><b>Speed.</b> How fast we can detect fault node</li>
-                        <li><b>Network message load.</b> number of messages required during protocol period</li>
+                    <b>crash failures</b> is imperfect. There will be <i>false positives</i>
+                    and <i>false negatives</i>.
                     </ul>
-                    Chandra, Tushar Deepak, and Sam Toueg. <i>"Unreliable failure detectors for reliable distributed systems."</i> Journal of the ACM (JACM) 43.2 (1996): 225-267.
+
+                    <font size="4">
+                    <p>Chandra, Tushar Deepak, and Sam Toueg. <i>"Unreliable failure detectors for reliable distributed systems."</i> Journal of the ACM (JACM) 43.2 (1996): 225-267.</p>
                     </font>
 
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
+					<h6>Failure detectors. Properties</h6>
+                    <ul>
+                        <li><b>Completeness</b> - every crashed process is eventually suspected</li>
+                        <li><b>Accuracy</b> - no correct process is ever suspected</li>
+                        <li><b>Speed</b> - how fast we can detect fault node</li>
+                        <li><b>Network message load</b> - number of messages required during protocol period</li>
+                    </ul>
+
+				</section>
+
+<!-- ####################################################################  -->
+				<section>
 					<h6>Basic failure detector</h6>
+                    <ul>
+                        <li>Each process periodically sends out an incremented
+                            heartbeat counter to the outside world.</li>
+                        <li>Another process is detected as failed when a
+                            heartbeat is not received from it for some time</li>
+                    </ul>
                     <img src="images/hearbeet_fd.svg" height="400px">
-                    <p>Each process periodically sends out an incremented
-                    heartbeat counter to the outside world. Another
-                    process is detected as failed when a heartbeat is not received
-                    from it for some time</p>
 				</section>
 
 <!-- ####################################################################  -->
@@ -445,7 +466,7 @@
                         <li><b>Completeness</b> each process eventually miss heartbeat</li>
                         <li><b>Speed</b> configurable, as little as protocol interval</li>
                         <li><b>Accuracy</b> high, depends on speed</li>
-                        <li><b>Network message load.</b> $O(n^2)$ each node sends message to all other nodes</li>
+                        <li><b>Network message load</b> $O(n^2)$ each node sends message to all other nodes</li>
                     </ul>
 				</section>
 <!-- ####################################################################  -->
@@ -459,15 +480,20 @@
 <!-- ####################################################################  -->
 				<section>
 					<h6>SWIM Failure Detector</h6>
-                    <img src="images/swim_fd2.svg" height="400px">
-                    <font size="6">
-                    <p>SWIM additional to ping/ack protocol adds indirect probing subgroup of
-                    members to relay both pings and acks. The rationale for
-                    using this approach, rather than sending k ping messages
-                    directly to the peer, or relaying back acks in reply to ping-reqs
-                    directly back to, is to avoid the effect of any congestion
-                    on the network path between nodes.
-                    </p></font>
+                    <div style="width: 100%;overflow:auto;">
+                        <div style="float:left; width: 60%">
+                            <img src="images/swim_fd2.svg" height="400px">
+                        </div>
+                        <div style="float:right;width: 40%">
+                            <font size="6">
+                             <p></p>
+                             <ul>
+                             SWIM uses ping as primary way to do FD, and indirect ping for better tolerance to network
+                             partitions
+                             </ul>
+                            </font>
+                        </div>
+                    </div>
 				</section>
 <!-- ####################################################################  -->
 				<section>
@@ -481,7 +507,7 @@
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>SWIM Failure Detector. Accuracy improvement, suspicion subprotocol</h6>
+					<h6>SWIM vs connection loss. Suspicion subprotocol</h6>
                     <img src="images/swim_fsm.svg" height="300px">
                     <p>Provides a mechanism to reduce the rate of false
                     positives by “suspecting” a process before “declaring” it
@@ -490,8 +516,8 @@
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>SWIM VS packet order </h6>
-                    <img src="images/message_order.svg" height="400px">
+					<h6>SWIM vs packet order </h6>
+                    <img src="images/message_order.svg" height="300px">
                     <p>Ordering between messages is important, but total
                     order is not required, only happens before/casual ordering.</p>
                     <ul>
@@ -502,22 +528,39 @@
 <!-- ####################################################################  -->
 				<section>
 					<h6>SWIM vs Network Partitions</h6>
-                    <img src="images/net_partition.svg" height="350px">
                     <p>Nodes in each subnet can talk to each as result
-                    declares peers on other subnet as dead. How we can recover cluster after network heal?</p>
-                    <ul>
+                    declares peers on other subnet as dead. </p>
+                    <div style="width: 100%;overflow:auto;">
+                        <div style="float:left; width: 70%">
+                            <img src="images/net_partition.svg" height="350px">
+                        </div>
+                        <div style="float:right;width: 30%">
+                            <font size="6">
+                             <p></p>
+                             <ul><i>How we can recover cluster after network heal?</i>
                         <li>Do not purge nodes on dead</li>
                         <li>Periodically try to rejoin</li>
                     </ul>
+                            </font>
+                        </div>
 				</section>
 <!-- ####################################################################  -->
 				<section>
-					<h6>Problem solved!</h6>
-                    <img src="images/problem_3.svg" height="450px">
-                    <p>We have all required components: request routing,
-                    cluster membership protocol and failure detection. Discussed
-                    principles implemented in all mentioned frameworks.
-                    What other improvements we can add?</p>
+					<h6>Problem solved! Implementaion details</h6>
+                    <div style="width: 100%;overflow:auto;">
+                        <div style="float:left; width: 70%">
+                            <img src="images/problem_3.svg" height="450px">
+                        </div>
+                        <div style="float:right;width: 30%">
+                            <font size="6">
+                             <p></p>
+                             <ul>
+                                <li>How <i>python</i> can help with implementation?</li>
+                                <li>What frameworks to use?</li>
+                             </ul>
+                            </font>
+                        </div>
+                    </div>
 				</section>
 
 <!-- ####################################################################  -->
@@ -539,16 +582,15 @@
 <!-- ####################################################################  -->
 				<section>
 					<h6>Improvement: partial view for huge clusters</h6>
-                    <img src="images/hyparview.png" height="400px">
+                    <img src="images/hyparview.png" height="350px">
                     <p>For huge clusters full membership is not scalable, paper proposes
-                    partial membership protocol. Nodes maintain active view for
-                    actively monitored nodes, and passive view for not monitored ones</p>
+                    partial membership protocol</p>
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
-					<h6>Improvement: partial view incase of node failures</h6>
-                    <img src="images/hyparview_plot.png" height="400px">
+					<h6>Improvement: partial view in case of node failures</h6>
+                    <img src="images/hyparview_plot.png" height="350px">
                     <p>Even for failure rates as high as 95%, HyParView still
                     manages to maintain a reliability value in the order of
                     deliveries to 90% of the active processes.
@@ -560,21 +602,19 @@
 					<h6>Improvement: DHT for more balancing</h6>
                     <img src="images/orleans.png" height="400px">
                     <p>Orleans uses a one-hop distributed hash table
-                    that maps GUIDs to their current activations’ locations
-                    by way of partitioning the GUID hash space onto the cluster
-                    nodes. Local caches are used to optimize away the network
-                    round-trip in 90% of the cases </p>
+                    that maps actors between machines, as result actors
+                    could be moved across the cluster</p>
 				</section>
 
 <!-- ####################################################################  -->
 				<section>
 					<h6>Stateful Services Challenges</h6>
                     <ul>
-                        <li>Work distribution</b> - could be addressed by consistent hashing and DHT combination</li>
-                        <li>Code deployment</b> - huge state is takes time to persist on disk and restore data, see how FB fixed this</li>
-                        <li>Unbounded data structures</b> - back pressure should be implemented on day one</li>
-                        <li>Memory management</b> - GC pauses may influence FD</li>
-                        <li>Persistent strategies</b> - where and how persist state, DB, append log etc</li>
+                        <li><b>Work distribution</b></li>
+                        <li><b>Code deployment</b></li>
+                        <li><b>Unbounded data structures</b></li>
+                        <li><b>Memory management</b></li>
+                        <li><b>Persistent strategies</b></li>
                     </ul>
 				</section>
 
