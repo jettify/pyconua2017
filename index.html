@@ -122,9 +122,8 @@
                     <ul>
                         <li><b>Data locality</b>, logic executed where data is stored
                             with fast access</li>
-                        <li><b>Stronger consistency</b> with sticky connections</li>
-                        <li><b>Higher performance</b>, no need to fetch state to the
-                            load balanced node, data already is there</li>
+                        <li><b>Lower latency</b> state in memory, no need extra network hops</li>
+                        <li><b>Higher performance</b> no need to deserialize data</li>
                     </ul>
 				</section>
 <!-- ####################################################################  -->
@@ -154,62 +153,6 @@
                     <p>San Diego Supercomputer Center uses Serf to coordinate
                     compute resources in multiple locations, cluster size is about 2k nodes</p>
                     <img src='images/San_Diego_Supercomputer_Center_East1.jpeg' height="450px">
-				</section>
-<!-- ####################################################################  -->
-				<section>
-					<h6>Overview of frameworks for building cluster aware systems</h6>
-                    <small>
-                        <table>
-                            <tr>
-                                <th>Name</th>
-                                <th>Language</th>
-                                <th>Developer</th>
-                                <th>Description</th>
-                            </tr>
-                            <tr>
-                                <td><b>???</b></td>
-                                <td><b>Python</b></td>
-                                <td><b>???</b></td>
-                                <td><b>???</b></td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://github.com/uber/ringpop-node">RingPop</a></td>
-                                <td>node.js</td>
-                                <td>Uber</td>
-                                <td>Used as services for matching user and driver with follow up location update</td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://github.com/hashicorp/serf">Serf</a></td>
-                                <td>golang</td>
-                                <td>Hashicorp</td>
-                                <td>Used in number applications for instance in HPC to manage computing resources</td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://github.com/dotnet/orleans">Orleans</a></td>
-                                <td>.NET</td>
-                                <td>Microsoft</td>
-                                <td>General purpose framework, used in Halo online game</td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://github.com/orbit/orbit">Orbit/jGroups </a></td>
-                                <td>Java</td>
-                                <td>EA Games</td>
-                                <td>Used in Bioware games, such as DragonAge game, not sure where thou. Inspired by Orleans</td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://github.com/basho/riak_core">riak_core</a></td>
-                                <td>Erlang</td>
-                                <td>Basho</td>
-                                <td>Building block for Riak database and erlang distributed systems</td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://github.com/akka/akka">Akka</a></td>
-                                <td>Scala</td>
-                                <td>Lightblend</td>
-                                <td>General purpose distribute systems framework, often used as microservsies platform</td>
-                            </tr>
-                        </table>
-                        </small>
 				</section>
 <!-- ####################################################################  -->
 				<section>
@@ -373,7 +316,7 @@
 
 				</section>
 <!-- ####################################################################  -->
-
+<!--
 				<section>
 					<h6>Gossip Dissemination Properties</h6>
                         <div style="width: 100%;overflow:auto;">
@@ -400,13 +343,12 @@
                         <li>Low latency</li>
                         <li>Fault tolerance</li>
                         <li>Lightweight</li>
-                        <!--
                         Low latency - data disseminated within clog(n)clog⁡(n) rounds
                         Reliability/Fault tolerance - after few rounds it is very hard to kill information spread
                         Lightweight - only handful number of messages are transmitted cblog(n)
-                        -->
                     </ul>
                         </div>
+-->
 				</section>
 <!-- ####################################################################  -->
 
@@ -494,8 +436,9 @@
                             <font size="6">
                              <p></p>
                              <ul>
-                             SWIM uses ping as primary way to do FD, and indirect ping for better tolerance to network
-                             partitions
+                                 <li>On each protocol round, node sends only $k=3$ pings messages</li>
+                                 <li>SWIM uses ping as primary way to do FD, and indirect ping for better tolerance to network
+                                     partitions</li>
                              </ul>
                             </font>
                         </div>
@@ -567,6 +510,63 @@
                             </font>
                         </div>
                     </div>
+				</section>
+
+<!-- ####################################################################  -->
+				<section>
+					<h6>Overview of frameworks for building cluster aware systems</h6>
+                    <small>
+                        <table>
+                            <tr>
+                                <th>Name</th>
+                                <th>Language</th>
+                                <th>Developer</th>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td><b>???</b></td>
+                                <td><b>Python</b></td>
+                                <td><b>???</b></td>
+                                <td><b>???</b></td>
+                            </tr>
+                            <tr>
+                                <td><a href="https://github.com/uber/ringpop-node">RingPop</a></td>
+                                <td>node.js</td>
+                                <td>Uber</td>
+                                <td>Used as services for matching user and driver with follow up location update</td>
+                            </tr>
+                            <tr>
+                                <td><a href="https://github.com/hashicorp/serf">Serf</a></td>
+                                <td>golang</td>
+                                <td>Hashicorp</td>
+                                <td>Used in number applications for instance in HPC to manage computing resources</td>
+                            </tr>
+                            <tr>
+                                <td><a href="https://github.com/dotnet/orleans">Orleans</a></td>
+                                <td>.NET</td>
+                                <td>Microsoft</td>
+                                <td>General purpose framework, used in Halo online game</td>
+                            </tr>
+                            <tr>
+                                <td><a href="https://github.com/orbit/orbit">Orbit/jGroups </a></td>
+                                <td>Java</td>
+                                <td>EA Games</td>
+                                <td>Used in Bioware games, such as DragonAge game, not sure where thou. Inspired by Orleans</td>
+                            </tr>
+                            <tr>
+                                <td><a href="https://github.com/basho/riak_core">riak_core</a></td>
+                                <td>Erlang</td>
+                                <td>Basho</td>
+                                <td>Building block for Riak database and erlang distributed systems</td>
+                            </tr>
+                            <tr>
+                                <td><a href="https://github.com/akka/akka">Akka</a></td>
+                                <td>Scala</td>
+                                <td>Lightblend</td>
+                                <td>General purpose distribute systems framework, often used as microservsies platform</td>
+                            </tr>
+                        </table>
+                        </small>
 				</section>
 
 <!-- ####################################################################  -->
